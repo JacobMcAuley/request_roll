@@ -1,14 +1,32 @@
 <div id="request-roll">
     <div id="flex-container">
         {{#each items}}
-        <img class="flex-item" src="{{this}}">
+        <img class="player-item" src="{{this}}">
         {{/each}}
     </div>
+
     <div id="second-tier">
-        {{#each attribute}}
-        <div>
-            {{this}}
+        <div class="attribute-section">
+            {{#each attribute}}
+            <div class="selection-option">{{this}}</div>
+            {{/each}}
         </div>
-        {{/each}}
+        <div>
+            <div>Modifiers section</div>
+        </div>
+        <div class="attribute-section">
+                {{#each attribute}}
+                <div class="selection-option">{{this}}</div>
+                {{/each}}
+        </div>
+    </div>
+    <div>
+        <div id="third-tier">
+            <div class="skills-section">
+                    {{#each skill}}
+                    <div class="selection-optio">{{this}}</div>
+                    {{/each}}
+            </div>
+        </div>
     </div>
 </div>

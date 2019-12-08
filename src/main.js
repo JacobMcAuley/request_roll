@@ -6,7 +6,7 @@ class RequestRoll extends Application {
     static get defaultOptions() {
         const options = super.defaultOptions;
         options.template = "modules/request_roll/templates/hello.html";
-        options.width = 600;
+        options.width = 750;
         options.height = "auto";
         return options;
     }
@@ -26,8 +26,9 @@ class RequestRoll extends Application {
                 mood: "curious",
                 knowEverything: false,
                 items: [z, z, z],
-                attribute: ["Strength", "Dexterity", "Constitution", "Intelligence", "Wisdom", "Charisma"]
-              }
+                attribute: CONFIG.DND5E["abilities"],
+                skill: CONFIG.DND5E["skills"]
+            }
               
             return templateData;
         }
@@ -40,18 +41,9 @@ class RequestRoll extends Application {
      */
     activateListeners(html) {
 
-        html.find(".actor-name").click(ev => {
-        ev.preventDefault();
-
-        // Get the actor which was clicked and the active token(s) for that actor
-        let actorId = ev.currentTarget.parentElement.getAttribute("data-actor-id"),
-            actor = game.actors.get(actorId),
-            tokens = actor.getActiveTokens(true);
-
-        // Highlight active token(s) by triggering the token's mouse-over handler
-        for ( let t of tokens ) {
-            t._onMouseOver();
-        }
+        html.find(".player-item").click(ev => {
+            ev.preventDefault();
+            console.log("HEY!");
         })
     }
 }
