@@ -1,0 +1,16 @@
+#flex-container{
+    display: flex;
+    justify-content: space-between;
+    box-shadow:inset 0 0 10px #000000;
+    padding: 15px 15px 15px 15px;
+}
+
+.flex-item{
+    -moz-box-shadow:    3px 3px 5px 6px #ccc;
+    -webkit-box-shadow: 3px 3px 5px 6px #ccc;
+    box-shadow:         3px 3px 5px 6px #ccc;
+
+    max-width: 120px;
+    max-height: 120px;
+    border-radius: 5%;
+}

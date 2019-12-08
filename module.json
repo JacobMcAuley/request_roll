@@ -1,0 +1,17 @@
+{
+    "name": "request_roll",
+    "title": "Request Roll",
+    "description": "Request rolls from your players!",
+    "version": "0.0.0",
+    "author": "Jacob McAuley",
+    "scripts": [
+        "./src/main.js"
+    ],
+    "styles": [
+        "./css/request_roll.css"  
+    ],
+    "url": "https://github.com/JacobMcAuley/request_roll",
+    "manifest": "https://raw.githubusercontent.com/JacobMcAuley/request_roll/master/module.json",
+    "download": "https://github.com/JacobMcAuley/request_roll/archive/master.zip",
+    "minimumCoreVersion": "0.4.1"
+}
