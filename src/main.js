@@ -1,51 +1,89 @@
-class RequestRoll extends Application {
+class RequestRoll extends FormApplication {
+    constructor(...args){
+        super(...args);
+        this.SOCKET = "module.request_roll"
+        this.playerReference = {};
+        this._initSocket();
+        this._selected = [];
+        this._attributes = [];
+        this._saves = [];
+        this._skills = [];
+        
+    }
 
-    /**
-     * Define default options for the PartySummary application
-     */
     static get defaultOptions() {
         const options = super.defaultOptions;
-        options.template = "modules/request_roll/templates/hello.html";
+        options.template = "modules/request_roll/templates/request_roll.html";
         options.width = 750;
         options.height = "auto";
+        options.title = "Request Roll"
+        options.closeOnSubmit = false;
+        options.id = "roll-request-container"
         return options;
     }
 
-    /* -------------------------------------------- */
-
-    /**
-     * Return the data used to render the summary template
-     * Get all the active users
-     * The impersonated character for each player is available as user.character
-     */
-        async getData() {
-            let users = game.users.entities.filter(u => u.active)
-            let z = await users[1].character.getTokenImages();
-            const templateData = {
-                name: "Edgar",
-                mood: "curious",
-                knowEverything: false,
-                items: [z, z, z],
-                attribute: CONFIG.DND5E["abilities"],
-                skill: CONFIG.DND5E["skills"]
-            }
-              
-            return templateData;
+    async getData() {
+        const templateData = {
+            items: await this._setPortraits(),
+            attribute: CONFIG.DND5E["abilities"],
+            skill: CONFIG.DND5E["skills"]
         }
-
-    /* -------------------------------------------- */
-
-    /**
-     * Add some event listeners to the UI to provide interactivity
-     * Let's have the game highlight each player's token when their name is clicked on
-     */
-    activateListeners(html) {
-
-        html.find(".player-item").click(ev => {
-            ev.preventDefault();
-            console.log("HEY!");
-        })
+            
+        return templateData;
     }
+ 
+    _updateObject(event, formData) {
+        let userLookup = ev.currentTarget.getAttribute('src')
+
+        game.socket.emit("module.request_roll", this.playerReference[userLookup], resp => {
+            console.log("SENT");
+        });
+        console.log(formData);
+    }
+
+
+    activateListeners(html) {
+        super.activateListeners(html);
+        $(".player-portrait").click(function() {
+            if($(this).hasClass("player-portrait"))
+            {
+                $(this).removeClass("player-portrait").addClass("player-portrait-selected");
+            }
+            else{
+                $(this).removeClass("player-portrait-selected").addClass("player-portrait");
+            }
+        });
+    }
+
+
+    async _setPortraits(){
+        let users = game.users.entities
+        let userSet = [];
+        let imageArray = []
+        users.forEach(user => {
+            if(!user.isGM)
+                userSet.push(user)
+        });
+
+        userSet.forEach(async user => {
+            let image = await user.character.getTokenImages(); 
+            imageArray.push(image);
+            this.playerReference[image] = user.id;
+        });
+
+        return imageArray;
+    }
+
+    _initSocket(){
+        game.socket.on("module.request_roll", user => {
+            if(game.user.id == user){
+                //Handle Other Application
+            }
+        });
+    }
+
+
+
 }
 
 Hooks.on('ready', ()=>{
@@ -53,4 +91,3 @@ Hooks.on('ready', ()=>{
     ps.render(true);
 })
 
-  
