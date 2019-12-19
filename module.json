@@ -4,6 +4,7 @@
     "description": "Request rolls from your players!",
     "version": "0.0.0",
     "author": "Jacob McAuley",
+    "socket": true,
     "scripts": [
         "./src/main.js"
     ],
