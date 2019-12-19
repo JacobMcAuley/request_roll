@@ -1,0 +1,107 @@
+<form autocomplete="off">
+    <div id="request-roll">
+        <div id="player-container">
+            {{#each items}}
+            <label for=player-{{this}}>
+                <input type="checkbox" name="player-{{this}}" id="player-{{this}}" data-dtype="Boolean">
+                <img class="player-portrait" src="{{this}}">
+            </label>
+            {{/each}}
+        </div>
+        <div id="second-tier-title">
+            <div class="title-attributes">Attributes</div>
+            <div class="title-modifiers">Modifiers</div>
+            <div class="title-saves">Saves</div>
+        </div>
+        <div id="second-tier">       
+            <div class="attribute-section">    
+                {{#each attribute}}
+                <label for=attribute-{{this}}>
+                        <input type="checkbox" name="attribute-{{this}}" id="attribute-{{this}}" data-dtype="Boolean">
+                        <div class="selection-option">{{this}}</div>
+                </label>
+                {{/each}}
+            </div>
+            <div>
+                <div class="modifiers-section">
+                    <div id="modifiers-top-section">
+                        <div class="quick-mod-negative">
+                            <label for="common-one-neg">
+                                <input type="checkbox" name="common-one-neg" id="common-one-neg" data-dtype="String">
+                                <div class="number-modifier">-2</div>
+                            </label>
+                            <label for="common-two-neg">
+                                <input type="checkbox" name="common-two-neg" id="common-two-neg" data-dtype="String">
+                                <div class="number-modifier">-5</div>
+                            </label>
+                        </div>
+                        <div class="quick-mod-negative">
+                            <div class="modifier">
+                                <input placeholder="+7" type="text" name="modifier-number" id="modifier-number" data-dtype="String"><br>
+                                Modifier
+                            </div>
+                        </div>
+                        <div class="quick-mod-negative">
+                            <label for="common-one-pos">
+                                <input type="checkbox" name="common-one-pos" id="common-one-pos" data-dtype="String">
+                                <div class="number-modifier">+2</div>
+                            </label>
+                            <label for="common-two-pos">
+                                <input type="checkbox" name="common-two-pos" id="common-two-pos" data-dtype="String">
+                                <div class="number-modifier">+5</div>
+                            </label>
+                        </div>
+                    </div>
+                    
+                    <div id="modifiers-bottom-section">
+                        <div class="quick-mod-negative">
+                            <label for="disadvantage">
+                                <input type="checkbox" name="disadvantage" id="disadvantage" data-dtype="Boolean">
+                                <div class="adv-section">Dis</div>
+                            </label>
+                            <label for="hidden">
+                                <input type="checkbox" name="hidden" id="hidden" data-dtype="Boolean">
+                                <div class="adv-section">Hidden</div>
+                            </label>
+                        </div>
+                        <div class="quick-mod-negative">
+                            <label for="Advantage">
+                                <input type="checkbox" name="Advantage" id="Advantage" data-dtype="Boolean">
+                                <div class="adv-section">Adv</div>
+                            </label>
+                            <div id="dc" class="adv-section">
+                                <input placeholder="DC" type="text" name="dc-number" id="dc-number" data-dtype="String">
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div id="submit-div">
+                    <button class="request-submit" type="submit" value="1"><span>Submit Request</span></button>
+                </div>
+            </div>
+            <div class="attribute-section">
+                    {{#each attribute}}
+                    <label for=save-{{this}}>
+                            <input type="checkbox" name="save-{{this}}" id="save-{{this}}" data-dtype="Boolean">
+                            <div class="selection-option">{{this}}</div>
+                    </label>
+                    {{/each}}
+            </div>
+        </div>
+        <div>
+            <div id="third-tier">
+                <div id="third-tier-title">
+                    <div class="title-skills">Skills</div>
+                </div>
+                <div class="container-skills">
+                        {{#each skill}}
+                        <label for="skill-{{this}}">
+                                <input type="checkbox" name="skill-{{this}}" id="skill-{{this}}" data-dtype="Boolean">
+                                <div class="skill-option">{{this}}</div>
+                        </label>
+                        {{/each}}
+                </div>
+            </div>
+        </div>
+    </div>
+</form>
