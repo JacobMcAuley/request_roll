@@ -6,10 +6,12 @@
     "author": "Jacob McAuley",
     "socket": true,
     "scripts": [
-        "./src/main.js"
+        "./src/main.js",
+        "./src/rollrequested.js"
     ],
     "styles": [
-        "./css/request_roll.css"  
+        "./css/request_roll.css",
+        "./css/requested_roll.css"  
     ],
     "url": "https://github.com/JacobMcAuley/request_roll",
     "manifest": "https://raw.githubusercontent.com/JacobMcAuley/request_roll/master/module.json",
