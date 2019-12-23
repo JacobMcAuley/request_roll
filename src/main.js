@@ -12,7 +12,7 @@ class RequestRoll extends FormApplication {
             neg : ["-2", "-5"]
         }
 
-        this.active = false;   
+        this.owned = game.settings.get('request_roll', 'ownedVsActive');   
     }
 
     static get defaultOptions() {
@@ -172,6 +172,8 @@ class RequestRoll extends FormApplication {
                     dict['prf'] = formData[key];
                 else if( key.includes("Perception"))
                     dict['prc'] = formData[key];
+                else if(key.includes('Sleight'))
+                    dict['slt'] = formData[key];
                 else
                     dict[(key.replace((wordReq+"-"), "")).substring(0,3).toLowerCase()] = formData[key];
             }
@@ -210,12 +212,10 @@ class RequestRoll extends FormApplication {
     }
 
     _determineOwnedOrActive(userSet){
-        if(this.active){
-            return this._active(userSet);
-        }
-        else{
+        if(this.owned)
             return this._owned(userSet);
-        }
+        else
+            return this._active(userSet);
     }
 
     _active(userSet){
@@ -246,10 +246,27 @@ class RequestRoll extends FormApplication {
     }
 }
 
-Hooks.on('ready', ()=>{
-    if(game.user.isGM){
-        let ps = new RequestRoll();
-        ps.render(true);
-    }
+
+/* Refer to line 16945 in foundry.js */
+Hooks.on('getSceneControlButtons', function(info){
+    let area = info.find(val => {
+        return val.name == "token";
+    })
+    
+    if(area)
+        area.tools.push({
+            name: "request_roll",
+            title: "Request Roll",
+            icon: "fas fa-dice-d20",
+            visible: game.user.isGM,
+            onClick: () => (new RequestRoll()).render(true)
+        });
+
 })
 
+Hooks.on('init', () => {
+    REQUEST_ROLL_CONFIG.forEach(function(setting){
+        game.settings.register(setting.module, setting.key, setting.settings);
+    });
+})
+CONFIG.debug.hooks = true

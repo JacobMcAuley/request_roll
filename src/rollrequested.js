@@ -5,13 +5,15 @@ class RollRequested extends FormApplication {
         this.data;
         this.characters;
         this.portraits;
+        this.counter = 0;
+        this.advantage;
         this._initSocket();
     }
 
     static get defaultOptions() {
         const options = super.defaultOptions;
         options.template = "modules/request_roll/templates/requested_roll.html";
-        options.width = 750;
+        options.width = 650;
         options.height = "auto";
         options.title = "Roll Requested!"
         options.closeOnSubmit = false;
@@ -20,12 +22,12 @@ class RollRequested extends FormApplication {
     }
 
     async getData() {
-        console.log(this.data);
         const templateData = {
             characters: this.portraits,
             attributes: this.data.attributes,
             skills: this.data.skills,
             saves: this.data.saves,
+            advantage: this.advantage
         }
         return templateData;
     }
@@ -50,14 +52,10 @@ class RollRequested extends FormApplication {
                 $('.roll-content').hide();
                 $('#' + id + 'C').insertAfter($('.roll-content:last'));
                 $('#' + id + 'C').fadeIn('slow');
-                
             }
         });
 
         $(".clickable-roll").click(this._onRoll.bind(this));
-
-        // Do a click fade for buttons https://api.jquery.com/hide/
-
     }
 
     _onRoll(event){
@@ -65,33 +63,40 @@ class RollRequested extends FormApplication {
         $(event.target).prop('disabled', true)
         let id = $(event.target).attr('id');
         let pid = $(event.target).parent().attr('id');
-        console.log(pid);
         let parts = id.split('-');
         let modResult = 0;
         let character = this.characters.filter(function(character){
             return character.actor === pid;
         })
+        let label = "";
         switch(parts[0]){
             case "attribute":
                 modResult = game.actors.get(character[0].actor).data.data.abilities[parts[1]].mod;
+                label = `${CONFIG.DND5E.abilities[parts[1]]} ability check`;
                 break;
             case "save":
                 modResult = game.actors.get(character[0].actor).data.data.abilities[parts[1]].save;
+                label = `${CONFIG.DND5E.abilities[parts[1]]} saving throw`;
                 break;
             case "skill":
                 modResult = game.actors.get(character[0].actor).data.data.skills[parts[1]].mod;
+                label = `${CONFIG.DND5E.skills[parts[1]]} skill check`;
                 break;
         }
         $(event.target).parent().hide(1000);
-        this._roll(0, {mod : modResult, bonus: 0}, "Pls work", "Pls work", character[0]);
+        this._roll(this.data.modifiers.advantage, {mod : modResult, bonus: this.data.modifiers.bonus}, label, label, character[0], this.data.modifiers.hidden, this.data.modifiers.dc);
     }
-    handleData(data){
+
+    async handleData(data){
         this.data = data;
-        this._updateCharacters();
+        await this._updateCharacters();
+        if(this._handleCounter())
+            return;
+        await this._handleAdvantage();
         this.render(true);
     }
 
-    _updateCharacters(){
+    async _updateCharacters(){
         this.characters = [];
         this.portraits = [];
         this.data.characters.forEach(async character =>{
@@ -106,7 +111,28 @@ class RollRequested extends FormApplication {
         });
     }
 
-    _roll = (adv, data, title, flavor, speaker) => {
+    _handleCounter(){
+        this.counter += this.portraits.length * (this.data.attributes.length + this.data.skills.length + this.data.saves.length); 
+        if(this.counter == 0)
+            return true;
+    }
+
+    async _handleAdvantage(){
+        switch(this.data.modifiers.advantage){
+            case 0:
+                this.advantage = "";
+                break;
+            case 1:
+                this.advantage = " at advantage!";
+                break;
+            case -1:
+                this.advantage = " at disadvantage";
+                break;
+        }
+    }
+
+    _roll = (adv, data, title, flavor, speaker, hidden, dc) => {
+        let rollMode = (hidden == 1) ? "blindroll" : "roll";
         let parts = ["1d20", "@mod", "@bonus"] 
         if (adv === 1) {
           parts[0] = ["2d20kh"];
@@ -116,7 +142,9 @@ class RollRequested extends FormApplication {
           parts[0] = ["2d20kl"];
           flavor = `${title} (Disadvantage)`;
         }
-  
+        if(game.settings.get('request_roll', 'enableDcResolve'))
+            parts[0] += `ms>=${dc}`;
+
         // Don't include situational bonus unless it is defined
         if (!data.bonus && parts.indexOf("@bonus") !== -1) parts.pop();
   
@@ -127,13 +155,15 @@ class RollRequested extends FormApplication {
         let d20 = roll.parts[0];
         d20.options.critical = 20;
         d20.options.fumble = 1;
-  
+        
         // Convert the roll to a chat message
         roll.toMessage({
           speaker: speaker,
           flavor: flavor,
-          rollMode: game.settings.get("core", "rollMode")
+          rollMode: rollMode
         });
+        if(--this.counter == 0)
+            this.close();
     };
 
     _initSocket(){
@@ -146,16 +176,13 @@ class RollRequested extends FormApplication {
 }
 
 Handlebars.registerHelper('request-roll-ability', function(ability){
-    return CONFIG.DND5E["abilities"][ability];
+    return CONFIG.DND5E["abilities"][ability]
 });
 
 Handlebars.registerHelper('request-roll-skill', function(skill){
-    return CONFIG.DND5E["skills"][skill];
+    return CONFIG.DND5E["skills"][skill]
 });
 
 Hooks.on('ready', ()=>{
-    
-
-
     let ps = new RollRequested();
 })

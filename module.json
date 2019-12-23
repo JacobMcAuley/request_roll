@@ -7,14 +7,15 @@
     "socket": true,
     "scripts": [
         "./src/main.js",
-        "./src/rollrequested.js"
+        "./src/rollrequested.js",
+        "./config/config.js"
     ],
     "styles": [
         "./css/request_roll.css",
         "./css/requested_roll.css"  
     ],
     "url": "https://github.com/JacobMcAuley/request_roll",
-    "manifest": "https://raw.githubusercontent.com/JacobMcAuley/request_roll/master/module.json",
+    "manifest": "https://github.com/JacobMcAuley/request_roll/raw/master/module.json",
     "download": "https://github.com/JacobMcAuley/request_roll/archive/master.zip",
     "minimumCoreVersion": "0.4.1"
 }
