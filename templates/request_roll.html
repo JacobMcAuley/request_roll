@@ -2,9 +2,9 @@
     <div id="request-roll">
         <div id="player-container">
             {{#each items}}
-            <label for=player-{{this}}>
-                <input type="checkbox" name="player-{{this}}" id="player-{{this}}" data-dtype="Boolean">
-                <img class="player-portrait" src="{{this}}">
+            <label for=player-{{this.id}}>
+                <input type="checkbox" name="player-{{this.id}}" id="player-{{this.id}}" data-dtype="Boolean">
+                <img class="player-portrait" src="{{this.img}}">
             </label>
             {{/each}}
         </div>
@@ -26,28 +26,28 @@
                 <div class="modifiers-section">
                     <div id="modifiers-top-section">
                         <div class="quick-mod-negative">
-                            <label for="common-one-neg">
-                                <input type="checkbox" name="common-one-neg" id="common-one-neg" data-dtype="String">
+                            <label for="modifier-common-one-neg">
+                                <input type="checkbox" name="modifier-common-one-neg" id="modifier-common-one-neg" data-dtype="String">
                                 <div class="number-modifier">-2</div>
                             </label>
-                            <label for="common-two-neg">
-                                <input type="checkbox" name="common-two-neg" id="common-two-neg" data-dtype="String">
+                            <label for="modifier-common-two-neg">
+                                <input type="checkbox" name="modifier-common-two-neg" id="modifier-common-two-neg" data-dtype="String">
                                 <div class="number-modifier">-5</div>
                             </label>
                         </div>
                         <div class="quick-mod-negative">
                             <div class="modifier">
-                                <input placeholder="+7" type="text" name="modifier-number" id="modifier-number" data-dtype="String"><br>
+                                <input placeholder="+7" type="text" name="modifier-bonus" id="modifier-bonus" data-dtype="String"><br>
                                 Modifier
                             </div>
                         </div>
                         <div class="quick-mod-negative">
-                            <label for="common-one-pos">
-                                <input type="checkbox" name="common-one-pos" id="common-one-pos" data-dtype="String">
+                            <label for="modifier-common-one-pos">
+                                <input type="checkbox" name="modifier-common-one-pos" id="modifier-common-one-pos" data-dtype="String">
                                 <div class="number-modifier">+2</div>
                             </label>
-                            <label for="common-two-pos">
-                                <input type="checkbox" name="common-two-pos" id="common-two-pos" data-dtype="String">
+                            <label for="modifier-common-two-pos">
+                                <input type="checkbox" name="modifier-common-two-pos" id="modifier-common-two-pos" data-dtype="String">
                                 <div class="number-modifier">+5</div>
                             </label>
                         </div>
@@ -55,22 +55,22 @@
                     
                     <div id="modifiers-bottom-section">
                         <div class="quick-mod-negative">
-                            <label for="disadvantage">
-                                <input type="checkbox" name="disadvantage" id="disadvantage" data-dtype="Boolean">
+                            <label for="modifier-disadvantage">
+                                <input type="checkbox" name="modifier-disadvantage" id="modifier-disadvantage" data-dtype="Boolean">
                                 <div class="adv-section">Dis</div>
                             </label>
-                            <label for="hidden">
-                                <input type="checkbox" name="hidden" id="hidden" data-dtype="Boolean">
+                            <label for="modifier-hidden">
+                                <input type="checkbox" name="modifier-hidden" id="modifier-hidden" data-dtype="Boolean">
                                 <div class="adv-section">Hidden</div>
                             </label>
                         </div>
                         <div class="quick-mod-negative">
-                            <label for="Advantage">
-                                <input type="checkbox" name="Advantage" id="Advantage" data-dtype="Boolean">
+                            <label for="modifier-advantage">
+                                <input type="checkbox" name="modifier-advantage" id="modifier-advantage" data-dtype="Boolean">
                                 <div class="adv-section">Adv</div>
                             </label>
                             <div id="dc" class="adv-section">
-                                <input placeholder="DC" type="text" name="dc-number" id="dc-number" data-dtype="String">
+                                <input placeholder="DC" type="text" name="modifier-dc" id="modifier-dc" data-dtype="String">
                             </div>
                         </div>
                     </div>
