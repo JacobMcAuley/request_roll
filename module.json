@@ -5,6 +5,7 @@
     "version": "1.0.0",
     "author": "Jacob McAuley",
     "socket": true,
+    "systems" : ["dnd5e"],
     "scripts": [
         "./src/main.js",
         "./src/rollrequested.js",
