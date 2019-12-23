@@ -42,8 +42,8 @@ Enabled by default:  Auto Resolve DC, as it implies, automatically resolves the 
 
 To install Roll Request, do the following:
 
-1. [Download the zip file](https://github.com/JacobMcAuley/foundry-patrol/archive/master.zip)
-2. Extract the folder to your 'public/modules' in Foundry VTT.
+1. [Download the zip file](https://github.com/JacobMcAuley/request_roll/archive/master.zip)
+2. Extract the folder to your 'data/modules' in Foundry VTT.
 3. Reload your application.
 
 Auto-Installation Instructions:
