@@ -220,8 +220,8 @@ class RequestRoll extends FormApplication {
 
     _active(userSet){
         let informationField = []
-        userSet.forEach(async user => {
-            let image = await user.character.getTokenImages(); 
+        userSet.forEach(user => {
+            let image = user.character.img; 
             informationField.push({
                 img: image, 
                 id: user.id +'.' + user.character.id
