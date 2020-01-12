@@ -99,8 +99,8 @@ class RollRequested extends FormApplication {
     async _updateCharacters(){
         this.characters = [];
         this.portraits = [];
-        this.data.characters.forEach(async character =>{
-            let image = await game.actors.get(character).getTokenImages();
+        this.data.characters.forEach(character =>{
+            let image = game.actors.get(character).img;
             this.portraits.push({img : image, id: character});
             let actorData = {
                 actor: character,
@@ -133,7 +133,7 @@ class RollRequested extends FormApplication {
 
     _roll = (adv, data, title, flavor, speaker, hidden, dc) => {
         let rollMode = (hidden == 1) ? "blindroll" : "roll";
-        let parts = ["1d20", "@mod", "@bonus"] 
+        let parts = ["@bonus", "@mod", "1d20"] 
         if (adv === 1) {
           parts[0] = ["2d20kh"];
           flavor = `${title} (Advantage)`;
@@ -142,17 +142,18 @@ class RollRequested extends FormApplication {
           parts[0] = ["2d20kl"];
           flavor = `${title} (Disadvantage)`;
         }
-        if(game.settings.get('request_roll', 'enableDcResolve'))
-            parts[0] += `ms>=${dc}`;
 
         // Don't include situational bonus unless it is defined
-        if (!data.bonus && parts.indexOf("@bonus") !== -1) parts.pop();
+        if (!data.bonus && parts.indexOf("@bonus") !== -1) parts.shift();
   
         // Execute the roll
-        let roll = new Roll(parts.join(" + "), data).roll();
-  
+        let combinedString = parts.join(" + ");
+        if(game.settings.get('request_roll', 'enableDcResolve'))
+            combinedString += `ms>=${dc}`;
+        let roll = new Roll(combinedString, data).roll();
+
         // Flag critical thresholds
-        let d20 = roll.parts[0];
+        let d20 = roll.parts[roll.parts.length - 1];
         d20.options.critical = 20;
         d20.options.fumble = 1;
         
