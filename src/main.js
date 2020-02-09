@@ -269,4 +269,3 @@ Hooks.on('init', () => {
         game.settings.register(setting.module, setting.key, setting.settings);
     });
 })
-CONFIG.debug.hooks = true
