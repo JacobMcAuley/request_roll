@@ -1,7 +1,7 @@
 class RollRequested extends FormApplication {
-    constructor(...args){
+    constructor(...args) {
         super(...args);
-        this.SOCKET = "module.request_roll"
+        this.SOCKET = "module.request_roll";
         this.data;
         this.characters;
         this.portraits;
@@ -15,9 +15,9 @@ class RollRequested extends FormApplication {
         options.template = "modules/request_roll/templates/requested_roll.html";
         options.width = 650;
         options.height = "auto";
-        options.title = "Roll Requested!"
+        options.title = "Roll Requested!";
         options.closeOnSubmit = false;
-        options.id = "roll-requested-container"
+        options.id = "roll-requested-container";
         return options;
     }
 
@@ -27,49 +27,48 @@ class RollRequested extends FormApplication {
             attributes: this.data.attributes,
             skills: this.data.skills,
             saves: this.data.saves,
-            advantage: this.advantage
-        }
+            advantage: this.advantage,
+        };
         return templateData;
     }
 
     activateListeners(html) {
         super.activateListeners(html);
 
-        $(document).ready(function(){
-            $('#player-container img:not(:first)').addClass('not-selected')
-            $('.roll-content').hide();
-            $('.roll-content:first').show();
+        $(document).ready(function () {
+            $("#player-container img:not(:first)").addClass("not-selected");
+            $(".roll-content").hide();
+            $(".roll-content:first").show();
         });
 
-        $(".player-portrait").click(function() {
-            let id = $(this).attr('id');
-            if($(this).hasClass("not-selected"))
-            {
-                $('#player-container img').addClass('not-selected');
-                $('#player-container img').removeClass('active');
+        $(".player-portrait").click(function () {
+            let id = $(this).attr("id");
+            if ($(this).hasClass("not-selected")) {
+                $("#player-container img").addClass("not-selected");
+                $("#player-container img").removeClass("active");
                 $(this).removeClass("not-selected");
-                $(this).addClass("active")
-                $('.roll-content').hide();
-                $('#' + id + 'C').insertAfter($('.roll-content:last'));
-                $('#' + id + 'C').fadeIn('slow');
+                $(this).addClass("active");
+                $(".roll-content").hide();
+                $("#" + id + "C").insertAfter($(".roll-content:last"));
+                $("#" + id + "C").fadeIn("slow");
             }
         });
 
         $(".clickable-roll").click(this._onRoll.bind(this));
     }
 
-    _onRoll(event){
+    _onRoll(event) {
         event.preventDefault();
-        $(event.target).prop('disabled', true)
-        let id = $(event.target).attr('id');
-        let pid = $(event.target).parent().attr('id');
-        let parts = id.split('-');
+        $(event.target).prop("disabled", true);
+        let id = $(event.target).attr("id");
+        let pid = $(event.target).parent().attr("id");
+        let parts = id.split("-");
         let modResult = 0;
-        let character = this.characters.filter(function(character){
+        let character = this.characters.filter(function (character) {
             return character.actor === pid;
-        })
+        });
         let label = "";
-        switch(parts[0]){
+        switch (parts[0]) {
             case "attribute":
                 modResult = game.actors.get(character[0].actor).data.data.abilities[parts[1]].mod;
                 label = `${CONFIG.DND5E.abilities[parts[1]]} ability check`;
@@ -84,41 +83,47 @@ class RollRequested extends FormApplication {
                 break;
         }
         $(event.target).parent().hide(1000);
-        this._roll(this.data.modifiers.advantage, {mod : modResult, bonus: this.data.modifiers.bonus}, label, label, character[0], this.data.modifiers.hidden, this.data.modifiers.dc);
+        this._roll(
+            this.data.modifiers.advantage,
+            { mod: modResult, bonus: this.data.modifiers.bonus },
+            label,
+            label,
+            character[0],
+            this.data.modifiers.hidden,
+            this.data.modifiers.dc
+        );
     }
 
-    async handleData(data){
+    async handleData(data) {
         this.data = data;
         await this._updateCharacters();
-        if(this._handleCounter())
-            return;
+        if (this._handleCounter()) return;
         await this._handleAdvantage();
         this.render(true);
     }
 
-    async _updateCharacters(){
+    async _updateCharacters() {
         this.characters = [];
         this.portraits = [];
-        this.data.characters.forEach(character =>{
+        this.data.characters.forEach((character) => {
             let image = game.actors.get(character).img;
-            this.portraits.push({img : image, id: character});
+            this.portraits.push({ img: image, id: character });
             let actorData = {
                 actor: character,
                 alias: game.actors.get(character).data.name,
-                scene: game.scenes.active.id
-            }
+                scene: game.scenes.active.id,
+            };
             this.characters.push(actorData);
         });
     }
 
-    _handleCounter(){
-        this.counter += this.portraits.length * (this.data.attributes.length + this.data.skills.length + this.data.saves.length); 
-        if(this.counter == 0)
-            return true;
+    _handleCounter() {
+        this.counter += this.portraits.length * (this.data.attributes.length + this.data.skills.length + this.data.saves.length);
+        if (this.counter == 0) return true;
     }
 
-    async _handleAdvantage(){
-        switch(this.data.modifiers.advantage){
+    async _handleAdvantage() {
+        switch (this.data.modifiers.advantage) {
             case 0:
                 this.advantage = "";
                 break;
@@ -132,58 +137,49 @@ class RollRequested extends FormApplication {
     }
 
     _roll = (adv, data, title, flavor, speaker, hidden, dc) => {
-        let rollMode = (hidden == 1) ? "blindroll" : "roll";
-        let parts = ["@bonus", "@mod", "1d20"] 
+        let rollMode = hidden == 1 ? "blindroll" : "roll";
+        let parts = ["@bonus", "@mod", "10 "];
         if (adv === 1) {
-          parts[0] = ["2d20kh"];
-          flavor = `${title} (Advantage)`;
-        }
-        else if (adv === -1) {
-          parts[0] = ["2d20kl"];
-          flavor = `${title} (Disadvantage)`;
+            parts[0] = ["2d20kh"];
+            flavor = `${title} (Advantage)`;
+        } else if (adv === -1) {
+            parts[0] = ["2d20kl"];
+            flavor = `${title} (Disadvantage)`;
         }
 
         // Don't include situational bonus unless it is defined
         if (!data.bonus && parts.indexOf("@bonus") !== -1) parts.shift();
-  
+
         // Execute the roll
         let combinedString = parts.join(" + ");
-        if(game.settings.get('request_roll', 'enableDcResolve'))
-            combinedString += `ms>=${dc}`;
         let roll = new Roll(combinedString, data).roll();
 
-        // Flag critical thresholds
-        let d20 = roll.parts[roll.parts.length - 1];
-        d20.options.critical = 20;
-        d20.options.fumble = 1;
-        
         // Convert the roll to a chat message
         roll.toMessage({
-          speaker: speaker,
-          flavor: flavor,
-          rollMode: rollMode
+            speaker: speaker,
+            flavor: flavor,
+            rollMode: rollMode,
         });
-        if(--this.counter == 0)
-            this.close();
+        if (--this.counter == 0) this.close();
     };
 
-    _initSocket(){
-        game.socket.on("module.request_roll", packet => {
-            if(game.user.id === packet.userId){
+    _initSocket() {
+        game.socket.on("module.request_roll", (packet) => {
+            if (game.user.id === packet.userId) {
                 this.handleData(packet);
             }
         });
     }
 }
 
-Handlebars.registerHelper('request-roll-ability', function(ability){
-    return CONFIG.DND5E["abilities"][ability]
+Handlebars.registerHelper("request-roll-ability", function (ability) {
+    return CONFIG.DND5E["abilities"][ability];
 });
 
-Handlebars.registerHelper('request-roll-skill', function(skill){
-    return CONFIG.DND5E["skills"][skill]
+Handlebars.registerHelper("request-roll-skill", function (skill) {
+    return CONFIG.DND5E["skills"][skill];
 });
 
-Hooks.on('ready', ()=>{
+Hooks.on("ready", () => {
     let ps = new RollRequested();
-})
+});

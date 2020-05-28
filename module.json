@@ -5,18 +5,11 @@
     "version": "1.0.1",
     "author": "Jacob McAuley",
     "socket": true,
-    "systems" : ["dnd5e"],
-    "scripts": [
-        "./src/main.js",
-        "./src/rollrequested.js",
-        "./config/config.js"
-    ],
-    "styles": [
-        "./css/request_roll.css",
-        "./css/requested_roll.css"  
-    ],
+    "systems": ["dnd5e"],
+    "scripts": ["./src/main.js", "./src/rollrequested.js", "./config/config.js"],
+    "styles": ["./css/request_roll.css", "./css/requested_roll.css"],
     "url": "https://github.com/JacobMcAuley/request_roll",
     "manifest": "https://github.com/JacobMcAuley/request_roll/raw/master/module.json",
     "download": "https://github.com/JacobMcAuley/request_roll/archive/master.zip",
-    "minimumCoreVersion": "0.4.4"
+    "minimumCoreVersion": "0.6.0"
 }
