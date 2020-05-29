@@ -2,7 +2,7 @@
     "name": "request_roll",
     "title": "Request Roll",
     "description": "Request rolls from your players!",
-    "version": "1.0.3",
+    "version": "1.0.4",
     "author": "Jacob McAuley",
     "socket": true,
     "systems": ["dnd5e"],

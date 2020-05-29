@@ -36,24 +36,35 @@ class RequestRoll extends FormApplication {
         return templateData;
     }
 
-    sendPackets(packets) {
-        for (let i = 0; i < packets.length; ++i) {
-            for (let j = 0; j < packets[i].characters.length; ++j) {
-                for (let k = 0; k < packets[i].skills.length; ++k) {
-                    this._onRoll(packets[i].characters[j], packets[i].skills[k], packets[i]);
-                }
+    sendPackets(packet) {
+        let chatMessage = "";
+        for (let j = 0; j < packet.skills.length; ++j) {
+            for (let k = 0; k < packet.characters.length; ++k) {
+                let result = this._onRoll(packet.characters[k], packet.skills[j], packet);
+                chatMessage += `<p><b>${game.actors.get(packet.characters[k]).name}'s</b> passive is ${result}(${eval(result)}) `;
+                if (eval(result) >= packet.modifiers.dc) chatMessage += "<span style='color:#158E05;float:right;margin-right:10px'>Success</span>";
+                else chatMessage += "<span style='color:#D90404;float:right;margin-right:10px'>Failure</span>";
+                chatMessage += "<br></p>";
             }
+
+            ChatMessage.create({
+                speaker: game.user,
+                whisper: [game.user],
+                type: CONST.CHAT_MESSAGE_TYPES.WHISPER,
+                content: `<h2>${CONFIG.DND5E.skills[packet.skills[j]]} vs ${packet.modifiers.dc}</h2>` + chatMessage,
+            });
+            chatMessage = "";
         }
     }
 
     _onRoll(characterInfo, skill, data) {
         let character = characterInfo;
-        let modResult = game.actors.get(character).data.data.skills[skill].mod;
+        let modResult = game.actors.get(character).data.data.skills[skill];
         let label = `${CONFIG.DND5E.skills[skill]} skill check`;
 
-        this._roll(
+        return this._roll(
             data.modifiers.advantage,
-            { mod: modResult, bonus: data.modifiers.bonus },
+            { mod: modResult.mod, bonus: data.modifiers.bonus, prof: modResult.prof },
             label,
             label,
             game.actors.get(character),
@@ -64,7 +75,7 @@ class RequestRoll extends FormApplication {
 
     _roll = (adv, data, title, flavor, speaker, hidden, dc) => {
         let rollMode = hidden == 1 ? "blindroll" : "roll";
-        let parts = ["@bonus", "@mod", "10 "];
+        let parts = ["@bonus", "@mod", "@prof"];
         if (adv === 1) {
             parts[0] = ["2d20kh"];
             flavor = `${title} (Advantage)`;
@@ -75,30 +86,33 @@ class RequestRoll extends FormApplication {
 
         // Don't include situational bonus unless it is defined
         if (!data.bonus && parts.indexOf("@bonus") !== -1) parts.shift();
-
+        parts.unshift("10");
         // Execute the roll
         let combinedString = parts.join(" + ");
         let roll = new Roll(combinedString, data).roll();
-
-        // Convert the roll to a chat message
-        roll.toMessage({
-            speaker: speaker,
-            flavor: flavor,
-            rollMode: rollMode,
-        });
-        if (this.counter == 0) this.close();
+        return roll.result;
     };
 
     _updateObject(event, formData) {
         let sortedData = this._sortData(formData);
         let packetsToBeSent = this._seperatePackets(sortedData);
-        this.sendPackets(packetsToBeSent);
+
+        let playerMonkeyPatch = [];
+
+        for (let i = 0; i < packetsToBeSent.length; ++i) {
+            playerMonkeyPatch = playerMonkeyPatch.concat(packetsToBeSent[i].characters);
+        }
+
+        packetsToBeSent[0].characters = playerMonkeyPatch;
+
+        this.sendPackets(packetsToBeSent[0]);
     }
 
     _seperatePackets(sortedData) {
         let players = this._determineNecessaryPlayers(sortedData);
         let data = this._determineNecessaryOther(sortedData);
         let modifiers = this._determineNecessaryModifiers(sortedData);
+
         return this._generatePacket(players, data, modifiers);
     }
 
@@ -206,6 +220,7 @@ class RequestRoll extends FormApplication {
                 if (key.includes("Performance")) dict["prf"] = formData[key];
                 else if (key.includes("Perception")) dict["prc"] = formData[key];
                 else if (key.includes("Sleight")) dict["slt"] = formData[key];
+                else if (key.includes("Intimidation")) dict["itm"] = formData[key];
                 else
                     dict[
                         key
@@ -252,6 +267,7 @@ class RequestRoll extends FormApplication {
     _active(userSet) {
         let informationField = [];
         userSet.forEach((user) => {
+            if (!getProperty(user, "character.img")) return;
             let image = user.character.img;
             informationField.push({
                 img: image,
